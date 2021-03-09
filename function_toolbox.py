@@ -1,8 +1,10 @@
-def confusion_reporting(true_values, pred_values):
+def confusion_reporting(y_test, y_pred):
     """
     This function takes in the true values of a dataset and the predicted values
     of the dataset and prints out a classification report, accuracy score, and
     plots the confusion matrix of the true and predicted values for simple analysis
+    :param y_test: the test set of dependent variable values
+    :param y_pred: the predicted set of dependent variable values
     """
     import pandas as pd
     import numpy as np
@@ -10,12 +12,12 @@ def confusion_reporting(true_values, pred_values):
     import seaborn as sns
     from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score, precision_score
 
-    print(confusion_matrix(true_values, pred_values))
-    print(classification_report(true_values, pred_values))
-    print('Accuracy score:', round(accuracy_score(true_values, pred_values), 4))
-    print('F1 score:', round(f1_score(true_values, pred_values), 4))
+    print(confusion_matrix(y_test, y_pred))
+    print(classification_report(y_test, y_pred))
+    print('Accuracy score:', round(accuracy_score(y_test, y_pred), 4))
+    print('F1 score:', round(f1_score(y_test, y_pred), 4))
 
-    cm = confusion_matrix(true_values, pred_values)
+    cm = confusion_matrix(y_test, y_pred)
     df_cm = pd.DataFrame(cm.astype('float') / cm.sum(axis=1)[:, np.newaxis],
                          index=['F', 'T'],
                          columns=['F', 'T'])
@@ -38,6 +40,7 @@ def plot_roc(y_test, y_pred, model_type=''):
     """
     from sklearn.metrics import roc_auc_score
     from sklearn.metrics import roc_curve
+    import matplotlib.pyplot as plt
 
     fpr, tpr, thresholds = roc_curve(y_test, y_pred[:, 1])
     plt.figure()
@@ -73,7 +76,7 @@ def tts(df, dep_col, holdout=0.3, scale=True):
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=holdout, random_state=0)
 
-    if scale == True:
+    if scale:
         scaler = StandardScaler()
         X_train = scaler.fit_transform(X_train)
         X_test = scaler.transform(X_test)
@@ -91,6 +94,7 @@ def over_sample_smote(x_train, y_train, columns):
     :return: the oversampled independent variables as a dataframe, and a series of the oversampled dependent variable
     """
     from imblearn.over_sampling import SMOTE
+    import pandas as pd
 
     os = SMOTE(random_state=0)
     os_data_X, os_data_y = os.fit_sample(x_train, y_train)
